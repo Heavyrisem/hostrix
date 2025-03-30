@@ -1,7 +1,4 @@
-interface Host {
-  ip: string;
-  names: string[];
-}
+import { Host } from "@shared/types/hosts";
 
 export function parseHosts(content: string): Host[] {
   const lines = content.split("\n");

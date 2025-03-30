@@ -1,3 +1,4 @@
-import { Home } from "./home";
+// import { Home } from "./home";
+import { Hosts } from "./hosts";
 
-export const routeMaps = [{ path: "/", element: <Home /> }];
+export const routeMaps = [{ path: "/", element: <Hosts /> }];

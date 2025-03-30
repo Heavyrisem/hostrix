@@ -1,5 +1,5 @@
 /// <reference types="vite/client" />
-import { Channel, ChannelArgsMap, ChannelResultMap } from "@electron/modules";
+import type { Channel, ChannelArgsMap, ChannelResultMap } from "@electron/modules";
 
 declare global {
   interface Window {

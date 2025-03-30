@@ -6,5 +6,6 @@ export function ping({ data }: PingParams) {
 }
 
 export function getRawHosts() {
-  return window.ipc.invoke("getHostsRawContent");
+  return null;
+  // return window.ipc.invoke("getHostsRawContent");
 }
