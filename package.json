@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist-electron/main.js",
   "scripts": {
-    "dev": "vite",
+    "dev": "cross-env NODE_ENV=development vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
@@ -26,6 +26,7 @@
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react-swc": "^3.8.0",
+    "cross-env": "^7.0.3",
     "electron": "^35.1.1",
     "eslint": "^9.21.0",
     "eslint-config-prettier": "^10.1.1",

@@ -1,12 +1,26 @@
-import { BrowserWindow, app } from "electron";
+import { BrowserWindow, app, ipcMain } from "electron";
+import path from "path";
 
+import modules from "./modules";
+
+const __dirname = path.resolve();
+
+function ipcBootstrap() {
+  Object.entries(modules).forEach(([event, handler]) => ipcMain.handle(event, handler));
+}
+
+ipcBootstrap();
 app.whenReady().then(() => {
   const win = new BrowserWindow({
-    title: "Main window",
+    title: "Hostrix",
+    width: 1920,
+    height: 1200,
     webPreferences: {
+      preload: path.join(__dirname, "electron/preload.js"),
       nodeIntegration: true,
     },
   });
+  win.webContents.openDevTools();
 
   // You can use `process.env.VITE_DEV_SERVER_URL` when the vite command is called `serve`
   if (process.env.VITE_DEV_SERVER_URL) {
