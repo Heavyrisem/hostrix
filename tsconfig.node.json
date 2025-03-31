@@ -16,13 +16,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true,
-
-    "paths": {
-      "@electron/*": ["./electron/*"],
-      "@shared/*": ["./shared/*"]
-    }
+    "noUncheckedSideEffectImports": true
   },
   "exclude": ["node_modules"],
-  "include": ["vite.config.ts", "electron", "shared"]
+  "include": ["vite.config.ts"]
 }

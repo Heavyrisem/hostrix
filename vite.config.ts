@@ -1,6 +1,5 @@
-import path from "path";
 import { defineConfig } from "vite";
-import electron from "vite-plugin-electron/simple";
+import electron from "vite-plugin-electron";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 import tailwindcss from "@tailwindcss/vite";
@@ -11,21 +10,12 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
-    // tsconfigPaths(),
+    tsconfigPaths(),
     electron({
-      main: {
-        entry: "electron/main.ts",
+      entry: "electron/main.ts",
+      vite: {
+        plugins: [tsconfigPaths()],
       },
     }),
   ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-  build: {
-    rollupOptions: {
-      external: [/^@electron*/],
-    },
-  },
 });

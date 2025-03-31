@@ -1,9 +1,7 @@
 import { getRawHosts } from "@electron/libs/hosts/reader";
 
 const module = {
-  getRawHosts: () => {
-    return getRawHosts();
-  },
+  getRawHosts,
 } as const;
 
 export default module;

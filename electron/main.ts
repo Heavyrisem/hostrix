@@ -6,7 +6,9 @@ import modules from "./modules";
 const __dirname = path.resolve();
 
 function ipcBootstrap() {
-  Object.entries(modules).forEach(([event, handler]) => ipcMain.handle(event, handler));
+  const moduleEntries = Object.entries(modules);
+  console.log("moduleEntries", moduleEntries);
+  moduleEntries.forEach(([channel, handler]) => ipcMain.handle(channel, handler));
 }
 
 ipcBootstrap();
