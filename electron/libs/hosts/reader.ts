@@ -30,9 +30,6 @@ export async function getRawHosts() {
 }
 
 export async function getHosts() {
-  // const rawHosts = await getRawHosts();
-  const rawHosts = `
-1.1.1.1 A.com #B.com C.com
-`;
+  const rawHosts = await getRawHosts();
   return parseHosts(rawHosts);
 }

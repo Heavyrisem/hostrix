@@ -1,53 +1,44 @@
-import { Host, HostRecord } from "@shared/types/hosts";
+import { isIP } from "net";
 
-function isIPv4(ip: string): boolean {
-  const parts = ip.split(".");
-  if (parts.length !== 4) return false;
+import { HostRecord } from "@shared/types/hosts";
+
+function isDomain(domain: string): boolean {
+  if (domain === "localhost") return true;
+
+  const parts = domain.split(".");
+  if (parts.length < 2) return false;
 
   for (const part of parts) {
-    const num = parseInt(part, 10);
-    if (isNaN(num) || num < 0 || num > 255) return false;
+    if (!part.match(/^[a-z0-9]+$/i)) return false;
   }
 
   return true;
 }
 
-function isIPv6(ip: string): boolean {
-  const parts = ip.split(":");
-  if (parts.length < 3 || parts.length > 8) return false;
-
-  for (const part of parts) {
-    const num = parseInt(part, 16);
-    if (isNaN(num) || num < 0 || num > 65535) return false;
-  }
-
-  return true;
-}
-
-function isIP(ip: string): boolean {
-  return isIPv4(ip) || isIPv6(ip);
-}
-
-export function parseHosts(content: string, options?: { includeDisbled?: boolean }): HostRecord[] {
+export function parseHosts(content: string): HostRecord[] {
   const lines = content.split("\n");
-  const hosts: HostRecord[] = [];
+  let hosts: HostRecord[] = [];
 
   for (const line of lines) {
-    const commentIndex = line.indexOf("#");
-    const effectiveLine = commentIndex >= 0 ? line.substring(0, commentIndex) : line;
-
-    const trimmedLine = effectiveLine.trim();
+    const trimmedLine = line.trim();
     if (trimmedLine === "") continue;
 
-    const [ip, ...domains] = trimmedLine.split(/\s+/);
-    if (!ip || !domains.length) continue;
+    const unCommentedLine = trimmedLine.replace(/^#/, "").trim();
+    const isCommented = trimmedLine.startsWith("#");
+    const [ip, ...domains] = unCommentedLine.split(/\s+/);
+    if (!isIP(ip) || !domains.length) continue;
 
-    const records = domains.reduce((acc, domain) => {
-      if (!isIP(domain)) return acc;
-      return [...acc, { ip, domain: domain, disabled: false }];
+    const records = domains.reduce((acc, rawDomain, i, arr) => {
+      const findBeforeComment = arr.findIndex((item) => item.startsWith("#"));
+      const disabled = isCommented || findBeforeComment >= i;
+      const domain = rawDomain.replace(/#/g, "");
+
+      if (!isDomain(domain)) return acc;
+      const record = { ip, domain, disabled };
+      return [...acc, record];
     }, [] as HostRecord[]);
 
-    hosts.push(...records);
+    hosts = hosts.concat(records);
   }
 
   return hosts;
