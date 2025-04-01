@@ -1,16 +1,9 @@
-import { rawHostsService } from "@/features/hosts/query";
-
-import { useQuery } from "@tanstack/react-query";
+import { HostsMap } from "@/features/hosts/containers/HostsMap";
 
 export function Hosts() {
-  const { data: rawHosts } = useQuery(rawHostsService.queryOptions());
-
   return (
     <div>
-      rawHosts
-      <pre>
-        <code>{rawHosts}</code>
-      </pre>
+      <HostsMap />
     </div>
   );
 }

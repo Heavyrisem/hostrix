@@ -1,6 +1,6 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { getRawHosts } from "./api";
+import { getHosts, getRawHosts } from "./api";
 import { keys } from "./key";
 
 export const rawHostsService = {
@@ -9,5 +9,14 @@ export const rawHostsService = {
     queryOptions({
       queryKey: rawHostsService.queryKey(),
       queryFn: getRawHosts,
+    }),
+};
+
+export const hostsService = {
+  queryKey: keys.getHosts,
+  queryOptions: () =>
+    queryOptions({
+      queryKey: hostsService.queryKey(),
+      queryFn: getHosts,
     }),
 };

@@ -1,8 +1,36 @@
-import { Host } from "@shared/types/hosts";
+import { Host, HostRecord } from "@shared/types/hosts";
 
-export function parseHosts(content: string): Host[] {
+function isIPv4(ip: string): boolean {
+  const parts = ip.split(".");
+  if (parts.length !== 4) return false;
+
+  for (const part of parts) {
+    const num = parseInt(part, 10);
+    if (isNaN(num) || num < 0 || num > 255) return false;
+  }
+
+  return true;
+}
+
+function isIPv6(ip: string): boolean {
+  const parts = ip.split(":");
+  if (parts.length < 3 || parts.length > 8) return false;
+
+  for (const part of parts) {
+    const num = parseInt(part, 16);
+    if (isNaN(num) || num < 0 || num > 65535) return false;
+  }
+
+  return true;
+}
+
+function isIP(ip: string): boolean {
+  return isIPv4(ip) || isIPv6(ip);
+}
+
+export function parseHosts(content: string, options?: { includeDisbled?: boolean }): HostRecord[] {
   const lines = content.split("\n");
-  const hosts: Host[] = [];
+  const hosts: HostRecord[] = [];
 
   for (const line of lines) {
     const commentIndex = line.indexOf("#");
@@ -11,10 +39,15 @@ export function parseHosts(content: string): Host[] {
     const trimmedLine = effectiveLine.trim();
     if (trimmedLine === "") continue;
 
-    const [ip, ...names] = trimmedLine.split(/\s+/);
-    if (!ip || !names.length) continue;
+    const [ip, ...domains] = trimmedLine.split(/\s+/);
+    if (!ip || !domains.length) continue;
 
-    hosts.push({ ip, names });
+    const records = domains.reduce((acc, domain) => {
+      if (!isIP(domain)) return acc;
+      return [...acc, { ip, domain: domain, disabled: false }];
+    }, [] as HostRecord[]);
+
+    hosts.push(...records);
   }
 
   return hosts;

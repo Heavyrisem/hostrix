@@ -7,8 +7,12 @@ const __dirname = path.resolve();
 
 function ipcBootstrap() {
   const moduleEntries = Object.entries(modules);
-  console.log("moduleEntries", moduleEntries);
   moduleEntries.forEach(([channel, handler]) => ipcMain.handle(channel, handler));
+  console.log(
+    "moduleEntries",
+    moduleEntries,
+    moduleEntries.forEach(([channel]) => ipcMain.listeners(channel)),
+  );
 }
 
 ipcBootstrap();

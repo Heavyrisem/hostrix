@@ -1,4 +1,5 @@
-export interface Host {
+export interface HostRecord {
   ip: string;
-  names: string[];
+  domain: string;
+  disabled: boolean;
 }

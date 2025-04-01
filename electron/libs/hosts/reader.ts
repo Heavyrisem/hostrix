@@ -1,6 +1,7 @@
 import fs from "fs";
 
 import { LINUX_HOSTS_PATH, MACOS_HOSTS_PATH, WINDOWS_HOSTS_PATH } from "./constants";
+import { parseHosts } from "./utils";
 
 export async function getRawHosts() {
   const platform = process.platform;
@@ -26,4 +27,12 @@ export async function getRawHosts() {
   } catch (error) {
     throw new Error(`Failed to read hosts file: ${(error as Error)?.message}`);
   }
+}
+
+export async function getHosts() {
+  // const rawHosts = await getRawHosts();
+  const rawHosts = `
+1.1.1.1 A.com #B.com C.com
+`;
+  return parseHosts(rawHosts);
 }
