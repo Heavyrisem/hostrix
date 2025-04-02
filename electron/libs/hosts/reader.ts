@@ -1,7 +1,7 @@
 import fs from "fs";
 
 import { LINUX_HOSTS_PATH, MACOS_HOSTS_PATH, WINDOWS_HOSTS_PATH } from "./constants";
-import { parseHosts } from "./utils";
+import { getSections as getSectionsUtil, parseHosts } from "./utils";
 
 export async function getRawHosts() {
   const platform = process.platform;
@@ -32,4 +32,9 @@ export async function getRawHosts() {
 export async function getHosts() {
   const rawHosts = await getRawHosts();
   return parseHosts(rawHosts);
+}
+
+export async function getSections() {
+  const rawHosts = await getRawHosts();
+  return getSectionsUtil(rawHosts);
 }

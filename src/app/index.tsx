@@ -1,10 +1,11 @@
-import { AppProvider } from "./AppProvider";
-import { RoutesProvider } from "./RoutesProvider";
+import { StrictMode } from "react";
 
-export function App() {
-  return (
-    <AppProvider>
-      <RoutesProvider />
-    </AppProvider>
-  );
-}
+import { createRoot } from "react-dom/client";
+
+import { App } from "./app";
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);

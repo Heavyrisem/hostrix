@@ -25,9 +25,12 @@
       "@electron/*": ["./electron/*"],
       "@shared/*": ["./shared/*"],
       "@/*": ["./src/*"],
-      "@/shared/*": ["./src/shared/*"],
+      "@/app/*": ["./src/app/*"],
+      "@/pages/*": ["./src/pages/*"],
+      "@/widgets/*": ["./src/widgets/*"],
       "@/features/*": ["./src/features/*"],
-      "@/routes/*": ["./src/routes/*"]
+      "@/entities/*": ["./src/entities/*"],
+      "@/shared/*": ["./src/shared/*"]
     }
   },
   "exclude": ["node_modules"],

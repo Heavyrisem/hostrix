@@ -1,4 +1,4 @@
-import { cn } from "@/utils/cn";
+import { cn } from "@/shared/cn";
 
 import { HostRecord } from "@shared/types/hosts";
 
