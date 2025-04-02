@@ -11,7 +11,7 @@ export function Hosts() {
   return (
     <div className="h-full w-full">
       <HostsMap />
-      <pre>{rawHosts}</pre>
+      {/* <pre>{rawHosts}</pre> */}
     </div>
   );
 }
