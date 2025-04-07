@@ -48,19 +48,15 @@ export async function getSections(): Promise<string[]> {
 }
 
 export async function getSectionByName(name: string): Promise<{
-  record: HostRecord[];
+  records: HostRecord[];
   rawContent: string;
 }> {
   const rawHosts = await getRawHosts();
-  console.log(rawHosts);
-
-  const sectionRegex = new RegExp(
-    `${HOSTRIX_SECTION_START}\\s*${name}\\s*([\\s\\S]*?)${HOSTRIX_SECTION_END}`,
+  const match = rawHosts.match(
+    `${HOSTRIX_SECTION_START}[\\s|]*${name}([\\s\\S]*?)${HOSTRIX_SECTION_END}`,
   );
-  const match = rawHosts.match(sectionRegex);
-
   if (!match || !match[1]) {
-    return { record: [], rawContent: "" };
+    return { records: [], rawContent: "" };
   }
 
   const sectionContent = match[1].trim();
@@ -72,8 +68,9 @@ export async function getSectionByName(name: string): Promise<{
   const records: HostRecord[] = [];
 
   for (const host of hosts) {
-    const isDisabled = host.startsWith("#");
-    const cleanedHost = isDisabled ? host.substring(1).trim() : host;
+    let isDisabled = host.startsWith("#");
+    const commentsRemoved = host.replace(/^#+/, "").trim();
+    const cleanedHost = isDisabled ? commentsRemoved : host;
     if (!cleanedHost) continue;
 
     const [ip, ...domains] = cleanedHost.split(/\s+/);
@@ -81,17 +78,28 @@ export async function getSectionByName(name: string): Promise<{
 
     for (const domain of domains) {
       if (domain) {
+        if (domain.match(/^#+$/)) {
+          isDisabled = true;
+          continue;
+        }
+        if (domain.match(/^#+/)) {
+          isDisabled = true;
+        }
+
+        const cleanDomain = domain.replace(/#*/g, "");
         records.push({
           ip,
-          domain,
+          domain: cleanDomain,
           disabled: isDisabled,
         });
+
+        if (domain.match(/#+$/)) {
+          isDisabled = true;
+        }
       }
     }
   }
+  const rawContent = hosts.join("\n");
 
-  return {
-    record: records,
-    rawContent: hosts.join("\n"),
-  };
+  return { records, rawContent };
 }
