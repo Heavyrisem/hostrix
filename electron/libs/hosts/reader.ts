@@ -1,7 +1,15 @@
 import fs from "fs";
 
-import { LINUX_HOSTS_PATH, MACOS_HOSTS_PATH, WINDOWS_HOSTS_PATH } from "./constants";
-import { getSections as getSectionsUtil, parseHosts } from "./utils";
+import { HostRecord } from "@shared/types/hosts";
+
+import {
+  HOSTRIX_SECTION_END,
+  HOSTRIX_SECTION_REGEX,
+  HOSTRIX_SECTION_START,
+  LINUX_HOSTS_PATH,
+  MACOS_HOSTS_PATH,
+  WINDOWS_HOSTS_PATH,
+} from "./constants";
 
 export async function getRawHosts() {
   const platform = process.platform;
@@ -29,12 +37,72 @@ export async function getRawHosts() {
   }
 }
 
-export async function getHosts() {
-  const rawHosts = await getRawHosts();
-  return parseHosts(rawHosts);
+export async function getSections(): Promise<string[]> {
+  const content = await getRawHosts();
+  const sections =
+    content
+      .match(HOSTRIX_SECTION_REGEX)
+      ?.map((match) => match.replace(HOSTRIX_SECTION_REGEX, "$1")) ?? [];
+
+  return sections;
 }
 
-export async function getSections() {
+export async function getSectionByName(name: string): Promise<{
+  records: HostRecord[];
+  rawContent: string;
+}> {
   const rawHosts = await getRawHosts();
-  return getSectionsUtil(rawHosts);
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const match = rawHosts.match(
+    new RegExp(`${HOSTRIX_SECTION_START} \\| ${escapedName}([\\s\\S]*?)${HOSTRIX_SECTION_END}`),
+  );
+  if (!match || !match[1]) {
+    return { records: [], rawContent: "" };
+  }
+
+  const sectionContent = match[1].trim();
+  const hosts: string[] = sectionContent
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+
+  const records: HostRecord[] = [];
+
+  for (const host of hosts) {
+    let isDisabled = host.startsWith("#");
+    const commentsRemoved = host.replace(/^#+/, "").trim();
+    const cleanedHost = isDisabled ? commentsRemoved : host;
+    if (!cleanedHost) continue;
+
+    const [ip, ...domains] = cleanedHost.split(/\s+/);
+    if (!ip) continue;
+
+    for (const domain of domains) {
+      if (!domain) continue;
+
+      if (/^#+$/.test(domain)) {
+        isDisabled = true;
+        continue;
+      }
+
+      if (/^#+/.test(domain)) {
+        isDisabled = true;
+      }
+
+      const cleanDomain = domain.replace(/#*/g, "");
+
+      records.push({
+        ip,
+        domain: cleanDomain,
+        disabled: isDisabled,
+      });
+
+      if (/#+$/.test(domain)) {
+        isDisabled = true;
+      }
+    }
+  }
+  const rawContent = hosts.join("\n");
+
+  return { records, rawContent };
 }

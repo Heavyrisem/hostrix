@@ -1,8 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
-
 import { useSuspenseQuery } from "@tanstack/react-query";
 
-import { HostCard } from "../components/HostCard";
 import { hostsService } from "../query";
 
 // raw section 가져오기
