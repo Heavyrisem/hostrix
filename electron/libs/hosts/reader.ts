@@ -52,8 +52,9 @@ export async function getSectionByName(name: string): Promise<{
   rawContent: string;
 }> {
   const rawHosts = await getRawHosts();
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   const match = rawHosts.match(
-    new RegExp(`${HOSTRIX_SECTION_START} \\| ${name}([\\s\\S]*?)${HOSTRIX_SECTION_END}`),
+    new RegExp(`${HOSTRIX_SECTION_START} \\| ${escapedName}([\\s\\S]*?)${HOSTRIX_SECTION_END}`),
   );
   if (!match || !match[1]) {
     return { records: [], rawContent: "" };
