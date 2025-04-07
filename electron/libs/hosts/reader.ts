@@ -53,7 +53,7 @@ export async function getSectionByName(name: string): Promise<{
 }> {
   const rawHosts = await getRawHosts();
   const match = rawHosts.match(
-    `${HOSTRIX_SECTION_START}[\\s|]*${name}([\\s\\S]*?)${HOSTRIX_SECTION_END}`,
+    new RegExp(`${HOSTRIX_SECTION_START} \\| ${name}([\\s\\S]*?)${HOSTRIX_SECTION_END}`),
   );
   if (!match || !match[1]) {
     return { records: [], rawContent: "" };
@@ -77,25 +77,27 @@ export async function getSectionByName(name: string): Promise<{
     if (!ip) continue;
 
     for (const domain of domains) {
-      if (domain) {
-        if (domain.match(/^#+$/)) {
-          isDisabled = true;
-          continue;
-        }
-        if (domain.match(/^#+/)) {
-          isDisabled = true;
-        }
+      if (!domain) continue;
 
-        const cleanDomain = domain.replace(/#*/g, "");
-        records.push({
-          ip,
-          domain: cleanDomain,
-          disabled: isDisabled,
-        });
+      if (/^#+$/.test(domain)) {
+        isDisabled = true;
+        continue;
+      }
 
-        if (domain.match(/#+$/)) {
-          isDisabled = true;
-        }
+      if (/^#+/.test(domain)) {
+        isDisabled = true;
+      }
+
+      const cleanDomain = domain.replace(/#*/g, "");
+
+      records.push({
+        ip,
+        domain: cleanDomain,
+        disabled: isDisabled,
+      });
+
+      if (/#+$/.test(domain)) {
+        isDisabled = true;
       }
     }
   }
