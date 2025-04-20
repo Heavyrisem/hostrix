@@ -1,6 +1,6 @@
-import { queryOptions } from "@tanstack/react-query";
+import { queryOptions, useMutation } from "@tanstack/react-query";
 
-import { getHosts, getRawHosts } from "./api";
+import { getHosts, getRawHosts, getSectionByName } from "./api";
 import { keys } from "./key";
 
 export const rawHostsService = {
@@ -20,3 +20,19 @@ export const hostsService = {
       queryFn: getHosts,
     }),
 };
+
+export function useGetSectionByNameMutation() {
+  return useMutation({
+    mutationKey: keys.getSectionByName(),
+    mutationFn: getSectionByName,
+  });
+}
+
+// export const sectionByNameService = {
+//   queryKey: keys.getSectionByName,
+//   queryOptions: (name: string) =>
+//     queryOptions({
+//       queryKey: sectionByNameService.queryKey(),
+//       queryFn: () => getSectionByName(name),
+//     }),
+// };
